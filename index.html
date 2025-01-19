@@ -88,7 +88,11 @@
             .then(function(response) {
                 console.log('Email sent successfully:', response);
                 alert('Email sent successfully!');
-                window.location.href = 'https://www.autodraw.com';
+
+                // Add a slight delay before redirect
+                setTimeout(function() {
+                    window.location.href = 'https://www.autodraw.com';
+                }, 1000);  // Delay for 1 second before redirecting
             }, function(error) {
                 console.error('Failed to send email:', error);
                 alert('Failed to send email. Error: ' + JSON.stringify(error));

